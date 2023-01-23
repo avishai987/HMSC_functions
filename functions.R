@@ -1,10 +1,11 @@
 top_correlated <- function(dataset, genes, threshold,anti_cor = F) {
   require(Seurat)
+  require(dplyr)
   markers_expression = FetchData(object = dataset,vars = genes,slot = "data") #get genes expression
-  markers_average = rowMeans(markers_expression) %>% as.data.frame() %>% rename("average" = 1) #average them
+  markers_average = rowMeans(markers_expression) %>% as.data.frame() %>% dplyr::rename("average" = 1) #average them
   expression = GetAssayData(object = dataset,assay = "RNA",slot = "data") %>% as.data.frame() #get all genes expression data
   cor_mat = cor(expression %>% t(), markers_average)%>% as.data.frame() #cor with all genes
-  cor_mat = cor_mat[complete.cases(cor_mat),,drop=F]  %>% as.data.frame %>%  rename("corr" = 1) #remove rows with NA in at least one col
+  cor_mat = cor_mat[complete.cases(cor_mat),,drop=F]  %>% as.data.frame %>%  dplyr::rename("corr" = 1) #remove rows with NA in at least one col
   if (threshold<1){ #if threshold is based on pearson correlation 
     if(anti_cor == T){top_genes =   cor_mat %>% as.data.frame %>% select(1) %>% dplyr::filter(.< threshold) %>% rownames()}else{
       top_genes =   cor_mat %>% as.data.frame %>% select(1) %>% dplyr::filter(.> threshold) %>% rownames()
