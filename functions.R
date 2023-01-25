@@ -47,3 +47,25 @@ enriched_score_umap <- function(dataset,enrich_res, genes,col,distribution = F) 
   }
   return(list( score = enriched_genes_score,genes = enriched_genes))
 }
+
+
+calculate_score <- function(dataset,myo_genes,lum_genes,lum_threshold =1 , myo_threshold = -1) {
+  myoscore=apply(dataset@assays[["RNA"]][myo_genes,],2,mean)
+  lescore=apply(dataset@assays[["RNA"]][lum_genes,],2,mean)
+  dataset=AddMetaData(dataset,lescore-myoscore,"luminal_over_myo")
+  print(
+    FeaturePlot(object = dataset,features = "luminal_over_myo")
+  )
+  data = FetchData(object = dataset,vars = "luminal_over_myo")
+  print(
+    data %>% 
+    ggplot(aes( x=luminal_over_myo)) + 
+    geom_density() 
+    )
+  
+lum_cells_num = subset(x = dataset,luminal_over_myo >(lum_threshold)) %>% ncol() /ncol(dataset)
+myo_cells_num = subset(x = dataset,luminal_over_myo <(myo_threshold)) %>% ncol()/ncol(dataset)
+df = data.frame(cell_type = c("myo_cells","lum_cells"),percentage = c(myo_cells_num,lum_cells_num))
+ggplot(data=df, aes(x=cell_type, y=percentage)) +
+  geom_bar(stat="identity") + ggtitle("ACC cell types")
+}
