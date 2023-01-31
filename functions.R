@@ -5,7 +5,7 @@ top_correlated <-function(dataset, genes, threshold,anti_cor = F,n_vargenes =0) 
   markers_average = rowMeans(markers_expression) %>% as.data.frame() %>% dplyr::rename("average" = 1) #average them
   expression = GetAssayData(object = dataset,assay = "RNA",slot = "data") %>% as.data.frame() #get all genes expression data
   
-  if (vargenes != 0){ #filter genes to var genes
+  if (n_vargenes != 0){ #filter genes to var genes
     if ((VariableFeatures(dataset) %>% length())<n_vargenes) { #if exist vat genes in not enought, compute
       dataset = FindVariableFeatures(object = dataset,nfeatures = n_vargenes)
     }
