@@ -58,16 +58,16 @@ enriched_score_umap <- function(dataset,enrich_res, genes,col,distribution = F) 
 
 
 calculate_score = function(dataset,myo_genes,lum_genes,lum_threshold =1 , myo_threshold = -1) {
-  myoscore=apply(dataset@assays[["RNA"]][myo_genes,],2,mean)
-  lescore=apply(dataset@assays[["RNA"]][lum_genes,],2,mean)
+  myoscore=FetchData(object =dataset,vars =  myo_genes,slot = "data") %>% rowMeans()
+  lescore=FetchData(object =dataset,vars =  lum_genes,slot = "data") %>% rowMeans()
   correlation = cor(lescore,myoscore) %>% round(digits = 2)
   message("correlation of lum score and myo score:" %>% paste(correlation))
   
   
   original_myo_genes = c("TP63", "TP73", "CAV1", "CDH3", "KRT5", "KRT14", "ACTA2", "TAGLN", "MYLK", "DKK3")
   original_lum_genes = c("KIT", "EHF", "ELF5", "KRT7", "CLDN3", "CLDN4", "CD24", "LGALS3", "LCN2", "SLPI")
-  orig_myoscore=apply(dataset@assays[["RNA"]][original_myo_genes,],2,mean)
-  orig_lescore=apply(dataset@assays[["RNA"]][original_lum_genes,],2,mean)
+  orig_myoscore=FetchData(object =dataset,vars =  original_myo_genes,slot = "data") %>% rowMeans()
+  orig_lescore=FetchData(object =dataset,vars =  original_lum_genes,slot = "data") %>% rowMeans()
   correlation_to_original_lum = cor(orig_lescore,lescore) %>% round(digits = 2)
   correlation_to_original_myo = cor(orig_myoscore,myoscore) %>% round(digits = 2)
 
